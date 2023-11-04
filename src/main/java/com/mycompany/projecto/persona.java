@@ -1,28 +1,39 @@
 package com.mycompany.projecto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class persona {
-         private String name;
-         private String DNI;
-         
-  
-        public persona(String name, String DNI) {
-            this.name = name;
-            this.DNI = DNI;
-        }
+    private String name;
+    private String dni;
+    private List<Compra> compras;
+    private double gastoTotal;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getDNI() {
-            return DNI;
-        }
-
-        public void setDNI(String DNI) {
-            this.DNI = DNI;
-        }
+    public persona(String name, String dni) {
+        this.name = name;
+        this.dni = dni;
+        this.compras = new ArrayList<>();
+        this.gastoTotal = 0.0;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDNI() {
+        return dni;
+    }
+
+    public void registrarCompra(Producto producto) {
+        compras.add(new Compra(producto));
+        gastoTotal += producto.getPrecio();
+    }
+
+    public List<Compra> getCompras() {
+        return compras;
+    }
+
+    public double getGastoTotal() {
+        return gastoTotal;
+    }
+}

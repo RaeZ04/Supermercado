@@ -1,33 +1,33 @@
 package com.mycompany.projecto;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class trabajo {
-
-    public static void main(String[] args) throws InvalidFormatException, IOException {
-
+    public static void main(String[] args) throws IOException {
         File archivo = new File("Productos.xlsx");
+        List<persona> personas = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
         boolean terminar = false;
 
+        // Mostrar todas las opciones
+
         while (!terminar) {
-            System.out.println("");
-            System.out.println("¿Qué deseas hacer?\n1. Mostrar\n2. Registrar Compras\n3. Terminar");
-            System.out.print("Elige la opcion: ");
-            System.out.print("");
+            System.out.println("\n¿Qué deseas hacer?\n1. Mostrar\n2. Registrar Compras\n3. Terminar");
+            System.out.print("Elige la opción: ");
             int elegir = scanner.nextInt();
             System.out.println("");
+
             if (elegir == 1) {
                 mostrarExcel(archivo);
             } else if (elegir == 2) {
-
                 System.out.print("Cual es tu nombre: ");
                 String nombre = scanner.next();
 
@@ -39,83 +39,117 @@ public class trabajo {
                 while (NumeroCorrecto == false) {
                     if (dni.length() != 9) {
                         System.out.println("El DNI no es correcto");
+                        dni = scanner.next();
                     } else {
                         NumeroCorrecto = true;
                     }
                 }
 
-                persona persona = new persona(nombre, dni);
+                
+                persona personaExistente = buscarPersonaExistente(personas, nombre, dni);
 
-                System.out.print(persona.getName() + ", con DNI " + persona.getDNI());
-                System.out.println("");
+                if (personaExistente == null) {
+                    persona personaNueva = new persona(nombre, dni);
+                    personas.add(personaNueva);
+                    personaExistente = personaNueva;
+                }
 
+                System.out.print("Introduce el ID del producto que deseas comprar: ");
+                int id = scanner.nextInt();
+
+                registrarCompra(personaExistente, id, archivo);
+
+                System.out.println("Has comprado un producto.");
             } else if (elegir == 3) {
                 System.out.println("Has salido del programa.");
                 terminar = true;
             } else {
-                System.out.println(
-                        "Opción no válida. Por favor, elige 1 para mostrar, 2 para registrar compras o 3 para terminar.");
+                System.out.println("Opción no válida. Por favor, elige 1 para mostrar, 2 para registrar compras o 3 para terminar.");
             }
-
         }
 
+        // Mostrar lo que ha comprado cada persona
+       
+        for (persona p : personas) {
+            System.out.println(p.getName() + " con DNI " + p.getDNI() + " ha comprado:");
+            for (Compra compra : p.getCompras()) {
+                System.out.println("Producto ID: " + compra.getProducto().getId() + ", Nombre: " + compra.getProducto().getNombre() + ", Precio: " + compra.getProducto().getPrecio());
+            }
+            System.out.println("Gasto Total: " + p.getGastoTotal());
+        }
     }
 
-    public static void mostrarExcel(File archivo) {
+        // Coger los nombres y precios del ID que has metido
+
+    public static void registrarCompra(persona persona, int idProducto, File archivo) {
         try (FileInputStream fileInputStream = new FileInputStream(archivo);
-                Workbook workBook = new XSSFWorkbook(fileInputStream)) {
+             Workbook workBook = new XSSFWorkbook(fileInputStream)) {
             Sheet hoja = workBook.getSheetAt(0);
 
             for (Row fila : hoja) {
+                if (fila.getCell(1).getCellType() == CellType.NUMERIC) { 
+                    int productoId = (int) fila.getCell(1).getNumericCellValue();
+                    if (productoId == idProducto) {
+                        String nombreProducto = fila.getCell(0).getStringCellValue();
+                        double precioProducto = fila.getCell(3).getNumericCellValue();
 
+                        Producto producto = new Producto(idProducto, nombreProducto, precioProducto);
+                        persona.registrarCompra(producto);
+                        return;
+                    }
+                }
+            }
+            System.out.println("No se encontró un producto con el ID proporcionado.");
+        } catch (Exception e) {
+            System.out.println("Ha fallado algo");
+        }
+    }
+
+        // Mostrar todo el archivo del excel
+
+    public static void mostrarExcel(File archivo) {
+        try (FileInputStream fileInputStream = new FileInputStream(archivo);
+             Workbook workBook = new XSSFWorkbook(fileInputStream)) {
+            Sheet hoja = workBook.getSheetAt(0);
+
+            for (Row fila : hoja) {
                 for (Cell cell : fila) {
-
                     Cell valor = cell;
 
                     switch (cell.getCellType()) {
                         case NUMERIC:
+                            int a = (int) cell.getNumericCellValue();
+                            Integer s = a;
+                            String devolver = s.toString();
 
                             int cellcol = cell.getColumnIndex();
-                            if (cellcol == 0 || cellcol == 1) {
-
+                            if (cellcol == 1 || cellcol == 0) { 
                                 if (cell.getNumericCellValue() < 8) {
-
                                     valor = cell;
-                                    System.out.print(valor + "\t\t");
-
+                                    System.out.print(devolver + "\t\t");
                                 } else {
-
                                     valor = cell;
-                                    System.out.print(valor + "\t");
-
+                                    System.out.print(devolver + "\t");
                                 }
                             }
                             break;
 
                         case STRING:
-
                             int cellcolString = cell.getColumnIndex();
-                            if (cellcolString == 0 || cellcolString == 1) {
-
+                            if (cellcolString == 1 || cellcolString == 0) {
                                 if (cell.getStringCellValue().length() < 8) {
-
                                     valor = cell;
                                     System.out.print(valor + "\t\t");
-
                                 } else {
-
                                     valor = cell;
                                     System.out.print(valor + "\t");
-
                                 }
                             }
-
                             break;
 
                         default:
                             break;
                     }
-
                 }
                 System.out.println();
             }
@@ -124,4 +158,14 @@ public class trabajo {
         }
     }
 
+    // Comparar si las personas son iguales
+
+    public static persona buscarPersonaExistente(List<persona> personas, String nombre, String dni) {
+        for (persona p : personas) {
+            if (p.getName().equals(nombre) && p.getDNI().equals(dni)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }
