@@ -33,7 +33,7 @@ public class trabajo {
 
                 boolean NumeroCorrecto = false;
                 String dni = "";
-                System.out.println("Introduce el DNI:");
+                System.out.print("Introduce el DNI: ");
                 dni = scanner.next();
 
                 while (NumeroCorrecto == false) {
