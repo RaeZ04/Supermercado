@@ -45,7 +45,6 @@ public class trabajo {
                     }
                 }
 
-                
                 persona personaExistente = buscarPersonaExistente(personas, nombre, dni);
 
                 if (personaExistente == null) {
@@ -54,40 +53,57 @@ public class trabajo {
                     personaExistente = personaNueva;
                 }
 
-                System.out.print("Introduce el ID del producto que deseas comprar: ");
-                int id = scanner.nextInt();
 
-                registrarCompra(personaExistente, id, archivo);
+                boolean salircompra = true;
 
-                System.out.println("Has comprado un producto.");
+                while (salircompra == true) {
+
+                    int id = 1;
+                    System.out.print("Introduce el ID del producto que deseas comprar (0 para salir): ");
+                    id = scanner.nextInt();
+
+                    if (id != 0) {
+
+                        registrarCompra(personaExistente, id, archivo);
+                        System.out.println("Has comprado un producto.");
+                    } else if (id == 0) {
+
+                        salircompra = false;
+
+                    }
+
+                }
+
             } else if (elegir == 3) {
                 System.out.println("Has salido del programa.");
                 terminar = true;
             } else {
-                System.out.println("Opción no válida. Por favor, elige 1 para mostrar, 2 para registrar compras o 3 para terminar.");
+                System.out.println(
+                        "Opción no válida. Por favor, elige 1 para mostrar, 2 para registrar compras o 3 para terminar.");
             }
         }
 
         // Mostrar lo que ha comprado cada persona
-       
+
         for (persona p : personas) {
             System.out.println(p.getName() + " con DNI " + p.getDNI() + " ha comprado:");
             for (Compra compra : p.getCompras()) {
-                System.out.println("Producto ID: " + compra.getProducto().getId() + ", Nombre: " + compra.getProducto().getNombre() + ", Precio: " + compra.getProducto().getPrecio());
+                System.out.println("Producto ID: " + compra.getProducto().getId() + ", Nombre: "
+                        + compra.getProducto().getNombre() + ", Precio: " + compra.getProducto().getPrecio());
             }
             System.out.println("Gasto Total: " + p.getGastoTotal());
         }
     }
 
-        // Coger los nombres y precios del ID que has metido
+    // Coger los nombres y precios del ID que has metido
 
     public static void registrarCompra(persona persona, int idProducto, File archivo) {
         try (FileInputStream fileInputStream = new FileInputStream(archivo);
-             Workbook workBook = new XSSFWorkbook(fileInputStream)) {
+                Workbook workBook = new XSSFWorkbook(fileInputStream)) {
             Sheet hoja = workBook.getSheetAt(0);
 
             for (Row fila : hoja) {
-                if (fila.getCell(1).getCellType() == CellType.NUMERIC) { 
+                if (fila.getCell(1).getCellType() == CellType.NUMERIC) {
                     int productoId = (int) fila.getCell(1).getNumericCellValue();
                     if (productoId == idProducto) {
                         String nombreProducto = fila.getCell(0).getStringCellValue();
@@ -105,11 +121,11 @@ public class trabajo {
         }
     }
 
-        // Mostrar todo el archivo del excel
+    // Mostrar todo el archivo del excel
 
     public static void mostrarExcel(File archivo) {
         try (FileInputStream fileInputStream = new FileInputStream(archivo);
-             Workbook workBook = new XSSFWorkbook(fileInputStream)) {
+                Workbook workBook = new XSSFWorkbook(fileInputStream)) {
             Sheet hoja = workBook.getSheetAt(0);
 
             for (Row fila : hoja) {
@@ -123,7 +139,7 @@ public class trabajo {
                             String devolver = s.toString();
 
                             int cellcol = cell.getColumnIndex();
-                            if (cellcol == 1 || cellcol == 0) { 
+                            if (cellcol == 1 || cellcol == 0) {
                                 if (cell.getNumericCellValue() < 8) {
                                     valor = cell;
                                     System.out.print(devolver + "\t\t");
