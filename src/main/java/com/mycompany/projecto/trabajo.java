@@ -53,11 +53,9 @@ public class trabajo {
                     personaExistente = personaNueva;
                 }
 
-
                 boolean salircompra = true;
 
                 while (salircompra == true) {
-
                     int id = 1;
                     System.out.print("Introduce el ID del producto que deseas comprar (0 para salir): ");
                     id = scanner.nextInt();
@@ -67,9 +65,7 @@ public class trabajo {
                         registrarCompra(personaExistente, id, archivo);
                         System.out.println("Has comprado un producto.");
                     } else if (id == 0) {
-
                         salircompra = false;
-
                     }
 
                 }
@@ -87,10 +83,14 @@ public class trabajo {
 
         for (persona p : personas) {
             System.out.println(p.getName() + " con DNI " + p.getDNI() + " ha comprado:");
+
             for (Compra compra : p.getCompras()) {
-                System.out.println("Producto ID: " + compra.getProducto().getId() + ", Nombre: "
-                        + compra.getProducto().getNombre() + ", Precio: " + compra.getProducto().getPrecio());
+                System.out.println("Producto ID: " + compra.getProducto().getId() +
+                        ", Nombre: " + compra.getProducto().getNombre() +
+                        ", Precio: " + compra.getProducto().getPrecio() +
+                        ", Cantidad: " + compra.getCantidad());
             }
+
             System.out.println("Gasto Total: " + p.getGastoTotal());
         }
     }

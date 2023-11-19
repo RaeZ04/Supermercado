@@ -25,7 +25,20 @@ public class persona {
     }
 
     public void registrarCompra(Producto producto) {
-        compras.add(new Compra(producto));
+        boolean productoExistente = false;
+
+        for (Compra compra : compras) {
+            if (compra.getProducto().getId() == producto.getId()) {
+                compra.incrementarCantidad();
+                productoExistente = true;
+                break;
+            }
+        }
+
+        if (productoExistente == false) {
+            compras.add(new Compra(producto));
+        }
+
         gastoTotal += producto.getPrecio();
     }
 
