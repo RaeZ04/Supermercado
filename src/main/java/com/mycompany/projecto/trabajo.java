@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class trabajo {
     public static void main(String[] args) throws IOException {
@@ -73,6 +74,7 @@ public class trabajo {
             } else if (elegir == 3) {
                 System.out.println("Has salido del programa.");
                 terminar = true;
+                exportarCarritosAJSON(personas, "carrito_compra.json");
             } else {
                 System.out.println(
                         "Opción no válida. Por favor, elige 1 para mostrar, 2 para registrar compras o 3 para terminar.");
@@ -184,4 +186,16 @@ public class trabajo {
         }
         return null;
     }
+
+    public static void exportarCarritosAJSON(List<persona> personas, String Carrito) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(new File(Carrito), personas);
+            System.out.println("Carritos exportados a JSON correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al exportar carritos a JSON: " + e.getMessage());
+        }
+    }
+
+    
 }
